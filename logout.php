@@ -1,8 +1,5 @@
 <?php
 include 'app/User.php';
-if (isset($_SESSION['email'])) {
-    updateSessionByEmail($_SESSION['email'], 'NULL');
-}
 session_unset();
 session_reset();
 session_destroy();

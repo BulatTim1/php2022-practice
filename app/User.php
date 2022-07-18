@@ -62,36 +62,46 @@ function addUser($login, $email, $password)
 function updateUser($user)
 {
     $sql = "UPDATE users SET ";
+    $params = [];
     if(isset($user['firstname'])){
-        $sql .= "firstname = ?, ";
+        $sql .= "firstname = :firstname, ";
+        $params['firstname'] = $user['firstname'];
     }
     if(isset($user['lastname'])){
-        $sql .= "lastname = ?, ";
+        $sql .= "lastname = :lastname, ";
+        $params['lastname'] = $user['lastname'];
     }
-    if(isset($user['about'])){
-        $sql .= "about = ?, ";
+    if(isset($user['description'])){
+        $sql .= "description = :description, ";
+        $params['description'] = $user['description'];
     }
-    if(isset($user['avatar'])){
-        $sql .= "avatar = ?, ";
-    }
-    if(isset($user['birthday'])){
-        $sql .= "birthday = ?, ";
+    if(isset($user['avatar_path'])){
+        $sql .= "avatar_path = :avatar_path, ";
+        $params['avatar_path'] = $user['avatar_path'];
     }
     if(isset($user['role'])){
-        $sql .= "role = ?, ";
+        $sql .= "role = :role, ";
+        $params['role'] = $user['role'];
+    }
+    if(isset($user['password'])){
+        $sql .= "password = :password, ";
+        $params['password'] = $user['password'];
     }
     $sql = substr($sql, 0, -2);
     if (isset($user['id'])) {
-        $sql .= " WHERE id = ?";
+        $sql .= " WHERE id = :id";
+        $params['id'] = $user['id'];
     } else if (isset($user['email'])) {
-        $sql .= " WHERE email = ?";
+        $sql .= " WHERE email = :email";
+        $params['email'] = $user['email'];
     } else if (isset($user['login'])) {
-        $sql .= " WHERE login = ?";
+        $sql .= " WHERE login = :login";
+        $params['login'] = $user['login'];
     } else {
         array_push($_SESSION['alerts'], 'Невозможно обновить пользователя');
         return false;
     }
-    return DB::pu($sql, array_values($user));
+    return DB::pu($sql, $params);
 }
 
 function deleteUser($id)
@@ -112,14 +122,42 @@ function getAllUsers($count = -1)
 
 function getRoleByUserId($id)
 {
-    $sql = "SELECT roles.name FROM roles LEFT JOIN users_roles ON roles.id = users_roles.role_id WHERE users_roles.user_id = ?";
+    $sql = "SELECT role FROM users WHERE id = ?";
     return DB::pq($sql, [$id]);
 }
 
-function updateSessionByEmail($email, $session_id)
+function isSubscribed($user_id, $sub_id)
 {
-    $sql = "UPDATE users SET session = ? WHERE email = ?";
-    DB::pu($sql, [$session_id, $email]);
+    if ($user_id == $sub_id) {
+        return [];
+    }
+    $sql = "SELECT * FROM subscribers WHERE subscriber_id = ? AND subscription_id = ?";
+    return DB::pq($sql, [$user_id, $sub_id]);
+}
+
+function subUnsub($user_id, $sub_id)
+{
+    if ($user_id == $sub_id) {
+        return false;
+    }
+    $getSql = "SELECT * FROM subscribers WHERE subscriber_id = ? AND subscription_id = ?";
+    $get = DB::pq($getSql, [$user_id, $sub_id]);
+    if (count($get) == 0) {
+        try {
+            $sql = "INSERT INTO subscribers (subscriber_id, subscription_id) VALUES (?, ?)";
+            DB::pu($sql, [$user_id, $sub_id]);
+        } catch (Exception $e) {
+            return false;
+        }
+    } else {
+        try {
+            $sql = "DELETE FROM subscribers WHERE subscriber_id = ? AND subscription_id = ?";
+            DB::pu($sql, [$user_id, $sub_id]);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function IsAuth()
@@ -136,13 +174,7 @@ function IsAuth()
     }
     else if ($_SESSION['login'] == $user[0]['login'])
     {
-        if ($user[0]['session'] != session_id())
-        {
-            header ('Location: /logout.php');
-            exit();
-        } else {
-            return true;
-        }
+        return true;
     }
     return false;
 }

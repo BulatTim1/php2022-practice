@@ -3,13 +3,23 @@
 include 'app/Post.php';
 include 'app/scripts.php';
 
-$title = 'Главная страница';
+$title = 'Ваша лента';
 include 'snippets/header.php';
 
 $page = 1;
 if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1) {
     $page = $_GET['page'];
 }
+
+if (!$auth)
+{
+    $_SESSION['alerts'][] = 'Для просмотра ленты нужно войти!';
+    header('Location: /login.php');
+    exit();
+}
+
+$user = getUser($_SESSION['email']);
+$user = count($user) == 0 ? null : $user[0];
 
 ?>
 
@@ -20,13 +30,13 @@ if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1) {
         <section>
             <header class="col-12-large">
                 <div class="title">
-                    <a href="/"><h2 class="title">Главная страница</h2></a>
+                    <h2 class="title">Лента новостей</h2>
                 </div>
             </header>
         </section>
         <?php
-        $posts = getAllPost(20, $page);
-        $count = getCountPost();
+        $posts = getPostsBySubscription($user['id'], 20, $page);
+        $count = getCountPostBySubscription($user['id']);
         if (count($posts)) :
             foreach ($posts as $post) :
                 ?>

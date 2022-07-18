@@ -1,4 +1,5 @@
 <?php
+global $auth;
 $auth = false;
 $name = 'Guest';
 
@@ -48,18 +49,19 @@ if (!isset($title)) {
 		width: 2em;
 		height: 2em;
 	}
+    img.avatar
+    {
+	    height: 128px;
+	    width: 128px;
+	    object-fit: cover;
+	    border-radius: 50%;
+	    margin-bottom: 5px;
+    }
 </style>
 <!-- Wrapper -->
 <div id="wrapper">
     <header id="header">
         <div class="inner">
-
-            <!-- Logo -->
-            <a href="/" class="logo">
-                <!--                            <span class="symbol"><img src="images/logo.svg" alt=""></span>-->
-                <span class="title">Phantom</span>
-            </a>
-
             <!-- Nav -->
             <nav>
                 <ul>

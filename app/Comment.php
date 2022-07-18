@@ -6,7 +6,7 @@ function getAllCommentsByPost($post_id, $user_name = false, $asd = true)
     if ($user_name == false) {
         $sql = "SELECT * FROM comments WHERE post_id = ?";
     } else {
-        $sql = "SELECT comments.*, users.login, users.image_path FROM comments LEFT join users on comments.user_id = users.id WHERE post_id = ? order by date " . ($asd ? 'asc' : 'desc');
+        $sql = "SELECT comments.*, users.login, users.avatar_path FROM comments LEFT join users on comments.user_id = users.id WHERE post_id = ? order by comments.created_at " . ($asd ? 'asc' : 'desc');
     }
     return DB::pq($sql, [$post_id]);
 }

@@ -3,7 +3,7 @@
 class DB{
     private const username = 'user';
     private const password = 'qwertpoiuy';
-    private const db = 'blog';
+    private const db = 'phantom-blog';
     private const host = '127.0.0.1';
     private const dsn = "mysql:host=".self::host.";dbname=".self::db.";charset=utf8";
 
@@ -12,13 +12,6 @@ class DB{
     // connects to db and returns array from query
     public static function q($sql){
         return self::getPDO()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public static function addPost($title, $body)
-    {
-        $statement = self::getPDO()->prepare('INSERT INTO posts (title, body) VALUES (:title, :body)');
-        
-        return $statement->execute(['title' => $title,'body' => $body]);
     }
 
     public static function getPDO()

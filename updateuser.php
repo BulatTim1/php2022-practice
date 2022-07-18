@@ -12,11 +12,10 @@ if(IsAuth() && isset($_POST))
     }
     $firstname = trim($_POST['firstname']);
     $lastname = trim($_POST['lastname']);
-    $birthday = trim($_POST['birthday']);
+    $description = trim($_POST['description']);
     $oldpassword = trim($_POST['oldpassword']);
     $password = trim($_POST['password']);
     $password2 = trim($_POST['password2']);
-    // dd([$firstname, $lastname, $birthday, $oldpassword, $password, $password2]);
 
     if (strlen($firstname) > 0)
     {
@@ -28,9 +27,9 @@ if(IsAuth() && isset($_POST))
         $user[0]['lastname'] = $lastname;
     }
 
-    if (strlen($birthday) > 0)
+    if (strlen($description) > 0)
     {
-        $user[0]['birthday'] = $birthday;
+        $user[0]['description'] = $description;
     }
 
     if (strlen($oldpassword) > 0)
@@ -54,21 +53,19 @@ if(IsAuth() && isset($_POST))
             array_push($_SESSION['alerts'], 'Неверный пароль');
         }
     }
-    dd($_FILES);
-    if (isset($_FILES['file']))
+    if (isset($_FILES['file']) && $_FILES['file']['error'] == 0)
     {
-        $res = saveFile($_FILES["file"], 'avatars/');
+        $res = saveFile($_FILES["file"]);
         if ($res['res'])
         {
-            $user[0]['avatar'] = $res['file'];
+            $user[0]['avatar_path'] = $res['path'];
         }
         else
         {
             array_push($_SESSION['alerts'], $res['error']);
         }
     }
-    dd($user);
     updateUser($user[0]);
-    // header ('Location: /profile.php?user='.$user[0]['login']);
+    header ('Location: /profile.php?user='.$user[0]['login']);
     exit();
 }

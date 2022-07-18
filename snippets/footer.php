@@ -1,7 +1,13 @@
 <?php
-namespace App\Snippets;
 ?>
-
+<footer id="footer">
+    <div class="inner">
+        <ul class="copyright">
+            <li>© BulatTim 2022</li>
+        </ul>
+    </div>
+</footer>
+</div>
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/browser.min.js"></script>
 <script src="assets/js/breakpoints.min.js"></script>
@@ -14,6 +20,7 @@ namespace App\Snippets;
             <li><a href="/">Главная</a></li>
             <?php if (isset($name) && $name != 'Guest') : ?>
                 <li><a href="/blog.php?user=<?= $name ?>">Ваш блог</a></li>
+                <li><a href="/feed.php">Ваша лента</a></li>
                 <li><a href="/addpost.php">Добавить пост</a></li>
                 <li><a href="/profile.php"><?= $_SESSION['login'] ?></a></li>
                 <li><a href="/logout.php">Выйти</a></li>
@@ -23,7 +30,9 @@ namespace App\Snippets;
             <?php endif; ?>
         </ul>
         </ul>
-    </div><a class="close" href="#menu">Close</a></nav>
+    </div>
+    <a class="close" href="#menu">Close</a>
+</nav>
 
 </body>
 

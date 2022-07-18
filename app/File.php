@@ -1,14 +1,15 @@
 <?php
-namespace App\Controllers;
 //ini_set("upload_max_filesize", "2K");
-function saveFile($fileArr, $pathInUploads)
+function saveFile($fileArr)
 {
     if ($fileArr["error"] == 0) {
         $dir = "uploads/";
         $filename = basename($fileArr["name"]);
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $ext2 = strtolower($fileArr["type"]);
         $acceptExt = ["png", "jpg", "jpeg"];
-        if (in_array($ext, $acceptExt)) {
+        $acceptExt2 = ["image/png", "image/jpg", "image/jpeg"];
+        if (in_array($ext, $acceptExt) && in_array($ext2, $acceptExt2)) {
             $tmp = $fileArr["tmp_name"];
             $uploadFileName = uniqid() . "_" . strtolower($filename);
             $res = move_uploaded_file($tmp, $dir.$uploadFileName);

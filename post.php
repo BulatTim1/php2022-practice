@@ -1,12 +1,14 @@
 <?php
 include 'app/Post.php';
+include 'app/User.php';
 include 'app/Comment.php';
 include 'app/scripts.php';
 
-$title = 'Пост';
+$title = 'Пост '. $_GET['user'] ;
 include 'snippets/header.php';
 
 ?>
+
 
 
 <!-- Main -->
@@ -14,7 +16,7 @@ include 'snippets/header.php';
     <div class="inner">
 	<?php
 	$post = isset($_GET['id']) ? getPostById($_GET['id'], true) : [];
-	if (count($post) == 0) {
+	if (count($post[0]) <= 1) {
 		echo '<p>Пост не найден</p>';
 	} else {
 		$post = $post[0];
@@ -22,16 +24,26 @@ include 'snippets/header.php';
 		updateViewCount($post['id']);
 		$post['view_count']++;
 	?>
+        <section>
+            <div>
+                <img class="avatar" src="<?= $post['avatar_path'] ?>" alt>
+            </div>
+            <header class="col-12-large">
+                <div class="title">
+                    <a href="/blog.php?user=<?= $post['login'] ?>"><h2 class="title">Блог <?= $post['login'] ?></h2></a>
+                </div>
+            </header>
+        </section>
 		<!-- Post -->
         <article class="row">
             <header class="col-12-large">
                 <div class="title">
-                    <h2><a href="post.php?id=<?= $post['id'] ?>"><?= $post['title'] ?></a></h2>
+                    <h1><?= $post['title'] ?></h1>
                 </div>
             </header>
-            <p class="col-12"><?= word_teaser($post['body'], 50) ?></p>
+            <p class="col-12"><?= word_teaser($post['content'], 50) ?></p>
             <footer class="row col-12">
-                <ul class="col-2 row" style="list-style: none">
+                <ul class="col-3 row" style="list-style: none">
                     <li><a href="/addlike.php?id=<?= $post['id'] ?>" class="icon solid fa-heart"><?= $post['like_count'] ?? 0 ?></a></li>
                     <li><a href="" class="icon solid fa-eye"><?= $post['view_count'] ?></a></li>
                     <li><a href="" class="icon solid fa-comment"><?= $post['comments'] ?></a></li>
@@ -40,7 +52,7 @@ include 'snippets/header.php';
                     <time class="published col-4"
                           datetime="<?= formatDate($post['date']) ?>"><?= formatDate($post['date']) ?></time>
                     <a href="/blog.php?user=<?= $post['login'] ?>" class="logo col-8">
-                                <span class="symbol"><img src="uploads/avatars/<?= $post['avatar'] ?>"
+                                <span class="symbol"><img class="avatar" src="<?= $post['avatar_path'] ?>"
                                                           alt="<?= $post['login'] ?>"></span><span
                                 class="title"><?= $post['login'] ?></span>
                     </a>
@@ -80,18 +92,25 @@ include 'snippets/header.php';
 
 		foreach ($comments as $comment) :
 		?>
-			<!-- Comment -->
-			<article class="post" style="padding-bottom : 0px;">
-				<header style="margin-bottom : 0px;">
-					<div class="title">
-						<h4><?= $comment['comment'] ?></h2>
-					</div>
-					<div class="meta">
-						<time class="published" datetime="<?= formatDate($comment['date']) ?>"><?= formatDate($comment['date']) ?></time>
-						<a href="#" class="author"><span class="name"><?= $comment['login'] ?></span><img src="uploads/avatars/<?= $comment['image_path'] ?>" alt="" /></a>
-					</div>
-				</header>
-			</article>
+            <article class="row">
+                <header class="col-12-large">
+                    <div class="title">
+                        <h2><?= $comment['comment'] ?></h2>
+                    </div>
+                </header>
+                <footer class="row col-12">
+                    <div class="col-10 row">
+                        <time class="published col-4"
+                              datetime="<?= formatDate($comment['date']) ?>"><?= formatDate($comment['date']) ?></time>
+                        <a href="/blog.php?user=<?= $comment['login'] ?>" class="logo col-8">
+                                <span class="symbol"><img class="avatar" src="<?= $comment['avatar_path'] ?>"
+                                                          alt="<?= $comment['login'] ?>"></span><span
+                                    class="title"><?= $comment['login'] ?></span>
+                        </a>
+                    </div>
+                </footer>
+                <hr class="col-12">
+            </article>
 		<?php endforeach; ?>
 	<?php } ?>
     </div>
@@ -99,7 +118,6 @@ include 'snippets/header.php';
 
 
 </div>
-<?php include 'snippets/sidebar_header.php';
-include 'snippets/sidebar_footer.php';
+<?php
 include 'snippets/footer.php';
 ?>

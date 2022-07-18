@@ -1,5 +1,4 @@
 <?php
-
 function pow_arr($arr, $num)
 {
     $result = [];
@@ -30,9 +29,7 @@ function formatDate($str, $date_format='d.m.Y H:i:s')
 
 function dd($var)
 {
-    echo '<h2>'.$var.'</h2>';
-    echo '<code>';
+    echo '<pre>';
     var_dump($var);
-    echo '</code>';
-    exit;
+    echo '</pre>';
 }
